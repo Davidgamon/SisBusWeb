@@ -1,5 +1,5 @@
 const express = require('express');             //requiero express y guardo en una constante
-const cors = require('cors');
+const cors = require('cors');                   //importamos el modulo cors
 const app = express();                          //lo guardo en una variable app para poder utilizarlo
 const bodyParser = require('body-parser');
 

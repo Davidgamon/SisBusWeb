@@ -1,6 +1,6 @@
 //aqui es donde se define las funciones o metodos de cada vista o direccion url
 const Usuario = require('../models/modeloUsuario');         //requiere el modelo de datos usuarios para consultar a la base de datos 
-var saldo = 150;
+var saldo=0;
 const usuario = {};                                          //creo un objeto controlador sisbus
 
 usuario.getUsuarios = async (req, res, next) => {               
@@ -10,8 +10,8 @@ usuario.getUsuarios = async (req, res, next) => {
 
 usuario.createUsuario = async (req, res, next) => {
     const usuario = new Usuario({
-        nombre: req.body.nombre,
-        cedula: req.body.cedula,
+        nombre: req.body.nombre,                             // recibimos todos los parametros del frontend menos el id
+        cedula: req.body.cedula,                             // por que la propia BD genera ese id
         uid: req.body.uid,
         saldo: req.body.saldo
     });
@@ -46,7 +46,10 @@ usuario.deleteUsuario = async (req, res, next) => {
 usuario.Usuariot = async (req, res, next) => {
     const {uid} = req.params
     const {op} = req.params
-    const monto = parseInt(req.params.monto);
+    //var monto = parseInt(req.params.monto);
+    var monto = req.params.monto;
+    monto = parseFloat(monto);
+    console.log(monto);
     var user =  await Usuario.find({uid});
     console.log(user);
     var id = user[0].id;
@@ -56,11 +59,13 @@ usuario.Usuariot = async (req, res, next) => {
     var cedula = user[0].cedula;
     switch(op) {
         case "+":
-            saldo= saldo_actual + monto;
+            saldo = saldo_actual + monto;
+            saldo = Number(saldo.toFixed(2));
             //res.json({"saldo": saldo+"  a la cuenta  " +uid});
             break
         case "-":
-            saldo= saldo_actual - monto;
+            saldo = saldo_actual - monto;
+            saldo = Number(saldo.toFixed(2));
             //res.json({"saldo": saldo+"  a la cuenta  " +uid});
             break
         default:
@@ -75,7 +80,7 @@ usuario.Usuariot = async (req, res, next) => {
     };
     console.log(usuario);
     await Usuario.findByIdAndUpdate(id, {$set: usuario}, {new: true});
-    res.json({status: 'Usuario Actualizado '+saldo});          
+    res.json({status: 'Usuario Actualizado '+ saldo});          
 };
 
 module.exports = usuario;                            //exporto el objeto 
